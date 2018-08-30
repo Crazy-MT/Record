@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">Record</string>
+
+    <string name="play_record">播放</string>
+    <string name="start_record">点按录音</string>
+    <string name="goon_record">点按继续</string>
+    <string name="repeat_record">重录</string>
+    <string name="save_record">保存</string>
+    <string name="error_upload_radio">录音保存失败，请重试</string>
+    <string name="request_audio_permission">请允许应用使用[麦克风]权限，否则无法录制音频</string>
+    <string name="setting">设置</string>
+    <string name="cancel_text">取消</string>
+    <string name="alert_reset_record">是否确认重新录制？</string>
+    <string name="alert_positive_reset">确认重录</string>
+
+</resources>
