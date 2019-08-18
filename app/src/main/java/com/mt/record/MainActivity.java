@@ -2,17 +2,23 @@ package com.mt.record;
 
 import android.Manifest;
 import android.app.AlertDialog;
+import android.content.ComponentName;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.os.SystemClock;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Chronometer;
 import android.widget.SeekBar;
+
+import com.mt.record.service.RecorderService;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -22,6 +28,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+
+    private static final String TAG = "MainActivity";
 
     private static final int TOTAL_TIME = 2 * 60; // 单位：秒
     SeekBar seekBar;
@@ -38,6 +46,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private String audioDir;
     private String audioPath;
 
+    private RecorderService.RecorderBinder recorderBinder;
+
+    private ServiceConnection connection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            Log.e(TAG, "onServiceConnected: ");
+            recorderBinder = (RecorderService.RecorderBinder) service;
+            recorderBinder.saveRecord();
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+        }
+    };
+
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
@@ -47,6 +70,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             case R.id.record_goon:
                 record();
+
+                Intent bindIntent = new Intent(this, RecorderService.class);
+                bindService(bindIntent, connection, BIND_AUTO_CREATE);
+
                 break;
 
             case R.id.record_reset:
@@ -274,6 +301,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+
+
         permissionHelper = new PermissionHelper(this);
 
         seekBar = findViewById(R.id.record_sb);
